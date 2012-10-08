@@ -13,7 +13,7 @@ example:
         .ylabel("y-axis label")
         .draw()
 
-See `examples/{index.html,example.js}` for more examples.
+See `examples/{index.html,example.js}` for more examples, or see it live [here](http://bl.ocks.org/d/3851117 "jsplotlib example gist").
 
 This library requires d3.js, JQuery, and tipsy.
 
