@@ -7,10 +7,14 @@ jsplotlib.construct_graph = function(chart) { // constructor
     that._chartheight = parseInt(chart.attr("height"),10);
     that._chartwidth = parseInt(chart.attr("width"));
 
+    that._title_string = "";
+    that._title_size = 0; // default to no title
+
     that._xaxis = jsplotlib.construct_axis(that, "x");
     that._yaxis = jsplotlib.construct_axis(that, "y");
 
     that._axes = [that._xaxis, that._yaxis];
+
 
     that.data = function(d) {
         this._data = d;
@@ -48,6 +52,13 @@ jsplotlib.construct_graph = function(chart) { // constructor
     that.axis_off = function() {
         this.yaxis_off();
         this.xaxis_off();
+        return this;
+    };
+    that.title = function(title_string) {
+        this._title_string = title_string;
+        // TODO  make customizable
+        this._title_size = this._chartheight * .1;
+        this._title_transform_string = "translate("+(this._chartwidth/2)+","+(this._title_size/2)+")";
         return this;
     };
 
@@ -96,6 +107,16 @@ jsplotlib.construct_graph = function(chart) { // constructor
         var myselector = "#" + chart.attr("id") + " .axis line, #" + chart.attr("id") + " .axis path";
         $(myselector).css("fill","none").css("stroke","#000");
         d3.svg.axis(chart);
+        if (this._title_string !== "") {
+            that.chart.append("svg:g")
+                .attr("class", "graph_title")
+                .attr("transform", this._title_transform_string)
+                .append("text").append("tspan")
+                .attr("text-anchor", "middle")
+                .attr("class", "graph_title")
+                .attr("writing-mode", "rl-tb")
+                .text(this._title_string);
+        }
         return this;
     };
     // for resizing rectangles. TODO make this neater!

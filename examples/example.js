@@ -8,6 +8,7 @@ $(window).load(function () {
         // can use xrange() to specify a range of x values.
         .xrange(80, 200, 6)
         .yaxis_off()
+        .title("A graph with no y-axis")
         .draw();
 
     // a slightly more interesting plot
@@ -28,6 +29,7 @@ $(window).load(function () {
         .s([10,10,3,9,2,8,11,12,7]) // sizes (in pixels)
         .line_style("") // no lines
         .xaxis_off() // can control axes individually
+        .title("A scatter plot")
         .draw();
 
     // a stacked bar graph

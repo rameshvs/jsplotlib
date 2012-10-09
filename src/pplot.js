@@ -4,11 +4,21 @@ jsplotlib.pplot = function(chart) {
 
     that.s = function(s) {
         // absolute sizes in pixels
-        this._s = s;
+        // can be an array or a number (uniform).
+        // if it's a number, MUST be after either x() or y()
+        var N = this._y.length || this._x.length;
+        if (!(s instanceof Array)) {
+            this._s = ones(N).map(function(d) { return s*d; });
+            this._s_was_set = false;
+        } else {
+            this._s = s;
+            this._s_was_set = true;
+        }
         return this;
     };
     that.marker_style = function(ms) {
-        // One of 'o', 'x' (supported so far)
+        // One of '.', 'o', 'x' (supported so far)
+        // defaults to '.'
         this._marker_style = ms;
         return this;
     };
@@ -20,6 +30,7 @@ jsplotlib.pplot = function(chart) {
     //that.get_lines_selector
     that.draw = function() {
         this._init_common();
+        var s_was_set = true;
 
         var N = this._y.length || this._x.length;
         if (this._line_style === undefined) {
@@ -29,8 +40,15 @@ jsplotlib.pplot = function(chart) {
             this.xrange(1,N,N);
         }
         if (!this._s) {
-            this._s = ones(N).map(function(d) { return d*5; });
-            this._s_unset = true;
+            var siz;
+            // TODO error checking: shouldn't be able to use "."
+            // with s specified
+            if (!this._marker_style || this._marker_style === ".") {
+                siz = 0;
+            } else {
+                siz = 5;
+            };
+            this.s(5);
         }
         var x = this._x;
         var s = this._s;
@@ -72,6 +90,7 @@ jsplotlib.pplot = function(chart) {
             .attr("class", "pplot_points");
 
 
+        var s_was_set = this._s_was_set;
         // TODO unify rectangle/circle mouseover
         $("#"+chart.attr("id")+" g.pplot_points").tipsy({ 
             gravity: 'nw',
@@ -79,7 +98,7 @@ jsplotlib.pplot = function(chart) {
             title: function() {
                 var d = this.__data__;
                 var output = "("+xformat(d[0])+","+yformat(d[1])+")";
-                if (!this._s_unset) {
+                if (s_was_set) {
                     output += ": " + d[2];
                 }
                 return output;
@@ -89,7 +108,8 @@ jsplotlib.pplot = function(chart) {
         // TODO use labels for styling (like bar graph) instead of hardcoding steelblue
         // for everything
         switch(this._marker_style) {
-            case undefined: // default to "o"
+            case undefined: // default to "."
+            case ".":
             case "o":
                 this._markers = this._points.append("circle")
                     .attr("cx", function(d) { return xscale(d[0]); })

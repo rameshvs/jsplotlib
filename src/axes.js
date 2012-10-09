@@ -70,7 +70,7 @@ jsplotlib.construct_axis = (function() { // constructor
             if (this._x_or_y === "x") {
                 this._range = [parent_graph._yaxis._size, parent_graph._chartwidth];
             } else if (this._x_or_y === "y") {
-                this._range = [parent_graph._height, 0];
+                this._range = [parent_graph._height, parent_graph._title_size];
             };
             this._scale
                 .domain(this._domain)
@@ -83,11 +83,9 @@ jsplotlib.construct_axis = (function() { // constructor
                 if (this._x_or_y === "x") {
                     this._size = parent_graph._chartheight * this._axis_proportion;
                     this._label_offset = this._size * this._label_proportion;
-                    this._range = [parent_graph._height, 0];
                 } else if (this._x_or_y === "y") {
                     this._size = parent_graph._chartwidth * this._axis_proportion;
                     this._label_offset = this._size * this._label_proportion;
-                    this._range = [this._size, parent_graph.chart._chartwidth];
                 } else {
                     throw "Invalid axis type (must be x or y): "+this._x_or_y
                 }

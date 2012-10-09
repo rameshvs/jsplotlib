@@ -90,7 +90,7 @@
         if (this._x_or_y === "x") {
           this._range = [ parent_graph._yaxis._size, parent_graph._chartwidth ];
         } else if (this._x_or_y === "y") {
-          this._range = [ parent_graph._height, 0 ];
+          this._range = [ parent_graph._height, parent_graph._title_size ];
         }
         this._scale.domain(this._domain).range(this._range);
         return this._scale;
@@ -100,11 +100,9 @@
           if (this._x_or_y === "x") {
             this._size = parent_graph._chartheight * this._axis_proportion;
             this._label_offset = this._size * this._label_proportion;
-            this._range = [ parent_graph._height, 0 ];
           } else if (this._x_or_y === "y") {
             this._size = parent_graph._chartwidth * this._axis_proportion;
             this._label_offset = this._size * this._label_proportion;
-            this._range = [ this._size, parent_graph.chart._chartwidth ];
           } else {
             throw "Invalid axis type (must be x or y): " + this._x_or_y;
           }
@@ -161,6 +159,8 @@
     };
     that._chartheight = parseInt(chart.attr("height"), 10);
     that._chartwidth = parseInt(chart.attr("width"));
+    that._title_string = "";
+    that._title_size = 0;
     that._xaxis = jsplotlib.construct_axis(that, "x");
     that._yaxis = jsplotlib.construct_axis(that, "y");
     that._axes = [ that._xaxis, that._yaxis ];
@@ -202,6 +202,12 @@
       this.xaxis_off();
       return this;
     };
+    that.title = function(title_string) {
+      this._title_string = title_string;
+      this._title_size = this._chartheight * .1;
+      this._title_transform_string = "translate(" + this._chartwidth / 2 + "," + this._title_size / 2 + ")";
+      return this;
+    };
     that._ylimits = function(minmax) {
       this._yaxis._set_data_range(minmax);
       return this;
@@ -240,6 +246,9 @@
       var myselector = "#" + chart.attr("id") + " .axis line, #" + chart.attr("id") + " .axis path";
       $(myselector).css("fill", "none").css("stroke", "#000");
       d3.svg.axis(chart);
+      if (this._title_string !== "") {
+        that.chart.append("svg:g").attr("class", "graph_title").attr("transform", this._title_transform_string).append("text").append("tspan").attr("text-anchor", "middle").attr("class", "graph_title").attr("writing-mode", "rl-tb").text(this._title_string);
+      }
       return this;
     };
     var chart_id = that.chart.attr("id");
@@ -359,7 +368,16 @@
   jsplotlib.pplot = function(chart) {
     var that = jsplotlib.construct_graph(chart);
     that.s = function(s) {
-      this._s = s;
+      var N = this._y.length || this._x.length;
+      if (!(s instanceof Array)) {
+        this._s = ones(N).map(function(d) {
+          return s * d;
+        });
+        this._s_was_set = false;
+      } else {
+        this._s = s;
+        this._s_was_set = true;
+      }
       return this;
     };
     that.marker_style = function(ms) {
@@ -372,6 +390,7 @@
     };
     that.draw = function() {
       this._init_common();
+      var s_was_set = true;
       var N = this._y.length || this._x.length;
       if (this._line_style === undefined) {
         this._line_style = "-";
@@ -380,10 +399,13 @@
         this.xrange(1, N, N);
       }
       if (!this._s) {
-        this._s = ones(N).map(function(d) {
-          return d * 5;
-        });
-        this._s_unset = true;
+        var siz;
+        if (!this._marker_style || this._marker_style === ".") {
+          siz = 0;
+        } else {
+          siz = 5;
+        }
+        this.s(5);
       }
       var x = this._x;
       var s = this._s;
@@ -417,13 +439,14 @@
       }).attr("s", function(d) {
         return d[2];
       }).attr("class", "pplot_points");
+      var s_was_set = this._s_was_set;
       $("#" + chart.attr("id") + " g.pplot_points").tipsy({
         gravity: "nw",
         html: true,
         title: function() {
           var d = this.__data__;
           var output = "(" + xformat(d[0]) + "," + yformat(d[1]) + ")";
-          if (!this._s_unset) {
+          if (s_was_set) {
             output += ": " + d[2];
           }
           return output;
@@ -431,6 +454,7 @@
       });
       switch (this._marker_style) {
        case undefined:
+       case ".":
        case "o":
         this._markers = this._points.append("circle").attr("cx", function(d) {
           return xscale(d[0]);
