@@ -149,7 +149,7 @@ jsplotlib.construct_axis = (function() { // constructor
         };
         that._draw_label = function() {
             this._compute_transform_string();
-            if (this._will_draw_axis) {
+            if (this._will_draw_axis && this._will_draw_label) {
                 parent_graph.chart.append("svg:g")
                     .attr("class", this._x_or_y + " axis_label")
                     .attr("transform", this._label_transform_string)

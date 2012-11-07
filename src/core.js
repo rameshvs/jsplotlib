@@ -2,7 +2,6 @@
 // TODO write methods that return CSS selectors for data, to allow for cleaner 
 //      formatting
 // TODO general cleanup
-// TODO implement title()
 // TODO make comments jsdoc
-// TODO don't draw label if it isn't set
+// TODO decide on a design pattern and stick with it (and clean up based on it)
 jsplotlib = {};
