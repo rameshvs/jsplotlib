@@ -4,9 +4,10 @@
     var chart_counter = 0;
     var f = function(width, height, where_to_insert, how_to_insert, attributes) {
       chart_counter++;
+      var DEFAULT_PADDING = 10;
       where_to_insert = where_to_insert || "body";
-      width = width || 500;
-      height = height || 200;
+      width = width - 2 * DEFAULT_PADDING || 500;
+      height = height - 2 * DEFAULT_PADDING || 200;
       attributes = attributes || {};
       if (!("id" in attributes)) {
         attributes.id = "chart" + chart_counter;
@@ -23,7 +24,7 @@
           chart.attr(attribute, attributes[attribute]);
         }
       }
-      $(".chart#" + attributes.id).css("padding", "10px");
+      $(".chart#" + attributes.id).css("padding", DEFAULT_PADDING + "px");
       return chart;
     };
     return f;
@@ -146,7 +147,7 @@
       };
       that._draw_label = function() {
         this._compute_transform_string();
-        if (this._will_draw_axis) {
+        if (this._will_draw_axis && this._will_draw_label) {
           parent_graph.chart.append("svg:g").attr("class", this._x_or_y + " axis_label").attr("transform", this._label_transform_string).append("text").append("tspan").attr("text-anchor", "middle").attr("class", this._x_or_y + " axis_label").attr("writing-mode", this._writing_mode).text(this._label_string);
         }
       };

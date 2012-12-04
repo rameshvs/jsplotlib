@@ -19,10 +19,12 @@ jsplotlib.make_chart = (function () {
         //   stacked_bar_graph().chart(chart).data(...)...
 
         chart_counter++;
+        
+        var DEFAULT_PADDING = 10;
         // sane defaults (0 is never a valid value for any of these)
         where_to_insert = where_to_insert || "body";
-        width = width || 500;
-        height = height || 200;
+        width = (width-2*DEFAULT_PADDING) || 500;
+        height = (height-2*DEFAULT_PADDING) || 200;
 
         attributes = attributes || {};
 
@@ -46,7 +48,7 @@ jsplotlib.make_chart = (function () {
                 chart.attr(attribute, attributes[attribute]);
             }
         }
-        $(".chart#"+attributes.id).css("padding","10px");
+        $(".chart#"+attributes.id).css("padding",DEFAULT_PADDING+"px");
         return chart;
     };
     return f;
