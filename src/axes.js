@@ -11,8 +11,17 @@ jsplotlib.construct_axis = (function() { // constructor
         that._size = 0;
         that._label_offset = 0;
         that._label_string = "";
-        that._axis_proportion = .15;
-        that._label_proportion = .7;
+        if (x_or_y === 'x') {
+            that._axis_proportion = .12;
+            that._label_proportion = .12;
+        } else if(x_or_y === 'y') {
+            that._axis_proportion = .07;
+            that._label_proportion = .05;
+        } else {
+            throw "Invalid axis type (must be x or y): " + this._x_or_y;
+        }
+
+        that._proportion = that._axis_proportion;
 
         that.n_ticks = 4;
 
@@ -22,6 +31,8 @@ jsplotlib.construct_axis = (function() { // constructor
 
         that.set_label = function(label_string) {
             this._label_string = label_string;
+            this._will_draw_label = true;
+            this._proportion = this._axis_proportion + this._label_proportion;
             return this;
         };
 
@@ -79,16 +90,19 @@ jsplotlib.construct_axis = (function() { // constructor
         };
         // this._size: width for y-axis block, height for x-axis block
         that._init = function(chart) {
+            var dimension;
             if (this._will_draw_axis) {
                 if (this._x_or_y === "x") {
-                    this._size = parent_graph._chartheight * this._axis_proportion;
-                    this._label_offset = this._size * this._label_proportion;
+                    dimension = parent_graph._chartheight;
                 } else if (this._x_or_y === "y") {
-                    this._size = parent_graph._chartwidth * this._axis_proportion;
-                    this._label_offset = this._size * this._label_proportion;
+                    dimension = parent_graph._chartwidth;
                 } else {
                     throw "Invalid axis type (must be x or y): "+this._x_or_y
                 }
+                this._size = dimension * this._proportion;
+                console.log(dimension);
+                console.log(this._size);
+                this._label_offset = this._size * this._label_proportion;
             } else {
                 this._size = 0;
             }
@@ -105,8 +119,8 @@ jsplotlib.construct_axis = (function() { // constructor
                 offset_h = 0;
                 offset_v = parent_graph._height;
 
-                offset_label_h = parent_graph._yaxis._size + parent_graph._chartwidth/2;
-                offset_label_v = parent_graph._height + this._label_offset;
+                offset_label_h = parent_graph._yaxis._size + parent_graph._chartwidth / 2;
+                offset_label_v = parent_graph._height + this._size - this._label_offset;
 
                 this._writing_mode = "lr-tb";
                 this._orientation = "bottom";
@@ -114,7 +128,7 @@ jsplotlib.construct_axis = (function() { // constructor
                 offset_h = this._size;
                 offset_v = 0;
 
-                offset_label_h = this._size - this._label_offset;
+                offset_label_h = this._label_offset;
                 offset_label_v = parent_graph._chartheight/2;
                 label_rotation = "rotate(180)";
 
@@ -148,6 +162,7 @@ jsplotlib.construct_axis = (function() { // constructor
             }
         };
         that._draw_label = function() {
+            console.log('Drawing label');
             this._compute_transform_string();
             if (this._will_draw_axis && this._will_draw_label) {
                 parent_graph.chart.append("svg:g")
