@@ -1,0 +1,4 @@
+- write methods that return CSS selectors for data, to allow for cleaner 
+- change comment/documentation style to jsdoc
+- decide on a design pattern and stick with it (and clean up based on it)
+
