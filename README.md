@@ -1,6 +1,10 @@
 # jsplotlib
-## A matplotlib/MATLAB (TM) -inspired library for creating interactive plots with d3.js
 
+## Deprecated
+This package is not actively maintained. For a more polished interface to plotting
+with d3.js, I suggest [NVD3](https://github.com/novus/nvd3).
+
+## A matplotlib/MATLAB (TM) -inspired library for creating interactive plots with d3.js
 This is a javascript library for creating interactive matplotlib-/MATLAB-style
 plots.  It provides a simple API for creating "charts" (SVG figures) and plots
 (scatter plots, line plots, bar graphs, and images) in HTML pages. Here's an
